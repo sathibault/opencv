@@ -116,6 +116,7 @@ public:
     bool _bboxesNormalized;
     bool _clip;
     bool _groupByClasses;
+    bool _polygons;
 
     enum { _numAxes = 4 };
     static const std::string _layerName;
@@ -185,6 +186,7 @@ public:
         _bboxesNormalized = getParameter<bool>(params, "normalized_bbox", 0, false, true);
         _clip = getParameter<bool>(params, "clip", 0, false, false);
         _groupByClasses = getParameter<bool>(params, "group_by_classes", 0, false, true);
+        _polygons = getParameter<bool>(params, "use_polygon", 0, false, false);
 
         getCodeType(params);
 
@@ -210,7 +212,7 @@ public:
         CV_Assert(inputs[0][0] == inputs[1][0]);
 
         int numPriors = inputs[2][2] / 4;
-        CV_Assert((numPriors * _numLocClasses * 4) == total(inputs[0], 1));
+        CV_Assert((numPriors * _numLocClasses * ((_polygons) ? 12 : 4)) == total(inputs[0], 1));
         CV_Assert(int(numPriors * _numClasses) == total(inputs[1], 1));
         CV_Assert(inputs[2][1] == 1 + (int)(!_varianceEncodedInTarget));
 
@@ -311,6 +313,8 @@ public:
     {
         std::vector<UMat> inputs;
         std::vector<UMat> outputs;
+
+	CV_Assert(!_polygons);
 
         bool use_half = (inps.depth() == CV_16S);
         if (use_half)
@@ -443,7 +447,7 @@ public:
 
             // Retrieve all location predictions
             std::vector<LabelBBox> allLocationPredictions;
-            GetLocPredictions(locationData, num, numPriors, _numLocClasses,
+            GetLocPredictions(locationData, num, (_polygons) ? 12 : 4, numPriors, _numLocClasses,
                               _shareLocation, _locPredTransposed, allLocationPredictions);
 
             // Retrieve all confidences
@@ -840,7 +844,7 @@ public:
     //                         [y,x,height,width] or [x,y,width,height] otherwise.
     //    loc_preds: stores the location prediction, where each item contains
     //      location prediction for an image.
-    static void GetLocPredictions(const float* locData, const int num,
+    static void GetLocPredictions(const float* locData, const int num, const int stride,
                            const int numPredsPerClass, const int numLocClasses,
                            const bool shareLocation, const bool locPredTransposed,
                            std::vector<LabelBBox>& locPreds)
@@ -851,12 +855,12 @@ public:
             CV_Assert(numLocClasses == 1);
         }
         locPreds.resize(num);
-        for (int i = 0; i < num; ++i, locData += numPredsPerClass * numLocClasses * 4)
+        for (int i = 0; i < num; ++i, locData += numPredsPerClass * numLocClasses * stride)
         {
             LabelBBox& labelBBox = locPreds[i];
             for (int p = 0; p < numPredsPerClass; ++p)
             {
-                int startIdx = p * numLocClasses * 4;
+                int startIdx = p * numLocClasses * stride;
                 for (int c = 0; c < numLocClasses; ++c)
                 {
                     int label = shareLocation ? -1 : c;
@@ -867,17 +871,17 @@ public:
                     util::NormalizedBBox& bbox = labelBBox[label][p];
                     if (locPredTransposed)
                     {
-                        bbox.ymin = locData[startIdx + c * 4];
-                        bbox.xmin = locData[startIdx + c * 4 + 1];
-                        bbox.ymax = locData[startIdx + c * 4 + 2];
-                        bbox.xmax = locData[startIdx + c * 4 + 3];
+                        bbox.ymin = locData[startIdx + c * stride];
+                        bbox.xmin = locData[startIdx + c * stride + 1];
+                        bbox.ymax = locData[startIdx + c * stride + 2];
+                        bbox.xmax = locData[startIdx + c * stride + 3];
                     }
                     else
                     {
-                        bbox.xmin = locData[startIdx + c * 4];
-                        bbox.ymin = locData[startIdx + c * 4 + 1];
-                        bbox.xmax = locData[startIdx + c * 4 + 2];
-                        bbox.ymax = locData[startIdx + c * 4 + 3];
+                        bbox.xmin = locData[startIdx + c * stride];
+                        bbox.ymin = locData[startIdx + c * stride + 1];
+                        bbox.xmax = locData[startIdx + c * stride + 2];
+                        bbox.ymax = locData[startIdx + c * stride + 3];
                     }
                 }
             }
@@ -955,6 +959,7 @@ public:
         ieLayer->params["confidence_threshold"] = format("%f", _confidenceThreshold);
         ieLayer->params["variance_encoded_in_target"] = _varianceEncodedInTarget ? "1" : "0";
         ieLayer->params["code_type"] = "caffe.PriorBoxParameter." + _codeType;
+        ieLayer->params["polygons"] = _polygon ? "1" : "0";
         return Ptr<BackendNode>(new InfEngineBackendNode(ieLayer));
 #endif  // HAVE_INF_ENGINE
         return Ptr<BackendNode>();

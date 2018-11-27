@@ -2206,6 +2206,13 @@ class DetectionOutputParameter : public ::google::protobuf::Message /* @@protoc_
   ::google::protobuf::int32 background_label_id() const;
   void set_background_label_id(::google::protobuf::int32 value);
 
+  // optional float confidence_threshold = 9;
+  bool has_confidence_threshold() const;
+  void clear_confidence_threshold();
+  static const int kConfidenceThresholdFieldNumber = 9;
+  float confidence_threshold() const;
+  void set_confidence_threshold(float value);
+
   // optional bool variance_encoded_in_target = 8 [default = false];
   bool has_variance_encoded_in_target() const;
   void clear_variance_encoded_in_target();
@@ -2213,12 +2220,12 @@ class DetectionOutputParameter : public ::google::protobuf::Message /* @@protoc_
   bool variance_encoded_in_target() const;
   void set_variance_encoded_in_target(bool value);
 
-  // optional float confidence_threshold = 9;
-  bool has_confidence_threshold() const;
-  void clear_confidence_threshold();
-  static const int kConfidenceThresholdFieldNumber = 9;
-  float confidence_threshold() const;
-  void set_confidence_threshold(float value);
+  // optional bool use_polygon = 11 [default = false];
+  bool has_use_polygon() const;
+  void clear_use_polygon();
+  static const int kUsePolygonFieldNumber = 11;
+  bool use_polygon() const;
+  void set_use_polygon(bool value);
 
   // optional int32 keep_top_k = 7 [default = -1];
   bool has_keep_top_k() const;
@@ -2270,6 +2277,8 @@ class DetectionOutputParameter : public ::google::protobuf::Message /* @@protoc_
   void clear_has_confidence_threshold();
   void set_has_normalized_bbox();
   void clear_has_normalized_bbox();
+  void set_has_use_polygon();
+  void clear_has_use_polygon();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
@@ -2278,8 +2287,9 @@ class DetectionOutputParameter : public ::google::protobuf::Message /* @@protoc_
   ::opencv_caffe::SaveOutputParameter* save_output_param_;
   ::google::protobuf::uint32 num_classes_;
   ::google::protobuf::int32 background_label_id_;
-  bool variance_encoded_in_target_;
   float confidence_threshold_;
+  bool variance_encoded_in_target_;
+  bool use_polygon_;
   ::google::protobuf::int32 keep_top_k_;
   int code_type_;
   bool share_location_;
@@ -15745,13 +15755,13 @@ inline void DetectionOutputParameter::set_num_classes(::google::protobuf::uint32
 
 // optional bool share_location = 2 [default = true];
 inline bool DetectionOutputParameter::has_share_location() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void DetectionOutputParameter::set_has_share_location() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void DetectionOutputParameter::clear_has_share_location() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void DetectionOutputParameter::clear_share_location() {
   share_location_ = true;
@@ -15901,13 +15911,13 @@ inline void DetectionOutputParameter::set_allocated_save_output_param(::opencv_c
 
 // optional .opencv_caffe.PriorBoxParameter.CodeType code_type = 6 [default = CORNER];
 inline bool DetectionOutputParameter::has_code_type() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void DetectionOutputParameter::set_has_code_type() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void DetectionOutputParameter::clear_has_code_type() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void DetectionOutputParameter::clear_code_type() {
   code_type_ = 1;
@@ -15926,13 +15936,13 @@ inline void DetectionOutputParameter::set_code_type(::opencv_caffe::PriorBoxPara
 
 // optional bool variance_encoded_in_target = 8 [default = false];
 inline bool DetectionOutputParameter::has_variance_encoded_in_target() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void DetectionOutputParameter::set_has_variance_encoded_in_target() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void DetectionOutputParameter::clear_has_variance_encoded_in_target() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void DetectionOutputParameter::clear_variance_encoded_in_target() {
   variance_encoded_in_target_ = false;
@@ -15950,13 +15960,13 @@ inline void DetectionOutputParameter::set_variance_encoded_in_target(bool value)
 
 // optional int32 keep_top_k = 7 [default = -1];
 inline bool DetectionOutputParameter::has_keep_top_k() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void DetectionOutputParameter::set_has_keep_top_k() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void DetectionOutputParameter::clear_has_keep_top_k() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void DetectionOutputParameter::clear_keep_top_k() {
   keep_top_k_ = -1;
@@ -15974,13 +15984,13 @@ inline void DetectionOutputParameter::set_keep_top_k(::google::protobuf::int32 v
 
 // optional float confidence_threshold = 9;
 inline bool DetectionOutputParameter::has_confidence_threshold() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void DetectionOutputParameter::set_has_confidence_threshold() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void DetectionOutputParameter::clear_has_confidence_threshold() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void DetectionOutputParameter::clear_confidence_threshold() {
   confidence_threshold_ = 0;
@@ -15998,13 +16008,13 @@ inline void DetectionOutputParameter::set_confidence_threshold(float value) {
 
 // optional bool normalized_bbox = 10 [default = true];
 inline bool DetectionOutputParameter::has_normalized_bbox() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void DetectionOutputParameter::set_has_normalized_bbox() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void DetectionOutputParameter::clear_has_normalized_bbox() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void DetectionOutputParameter::clear_normalized_bbox() {
   normalized_bbox_ = true;
@@ -16018,6 +16028,30 @@ inline void DetectionOutputParameter::set_normalized_bbox(bool value) {
   set_has_normalized_bbox();
   normalized_bbox_ = value;
   // @@protoc_insertion_point(field_set:opencv_caffe.DetectionOutputParameter.normalized_bbox)
+}
+
+// optional bool use_polygon = 11 [default = false];
+inline bool DetectionOutputParameter::has_use_polygon() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void DetectionOutputParameter::set_has_use_polygon() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void DetectionOutputParameter::clear_has_use_polygon() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void DetectionOutputParameter::clear_use_polygon() {
+  use_polygon_ = false;
+  clear_has_use_polygon();
+}
+inline bool DetectionOutputParameter::use_polygon() const {
+  // @@protoc_insertion_point(field_get:opencv_caffe.DetectionOutputParameter.use_polygon)
+  return use_polygon_;
+}
+inline void DetectionOutputParameter::set_use_polygon(bool value) {
+  set_has_use_polygon();
+  use_polygon_ = value;
+  // @@protoc_insertion_point(field_set:opencv_caffe.DetectionOutputParameter.use_polygon)
 }
 
 // -------------------------------------------------------------------
